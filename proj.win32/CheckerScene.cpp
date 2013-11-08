@@ -74,9 +74,15 @@ bool CheckerScene::init()
 		this->addChild(controlLayer, 4);		
 		
 		// initialize checkers on the board
-		formationManager = new FormationManager();		
+		formationManager = new FormationManager(boardLayer->getBox2World());		
 		checkerListUser = formationManager->LoadFormation(Player::user, (FormationTypes)1);
 		checkerListAI = formationManager->LoadFormation(Player::ai, (FormationTypes)1);
+		for(std::list<Checker*>::iterator it = checkerListUser->begin(); it != checkerListUser->end(); it++){
+			this->addChild((*it)->GetSprite(), 1000);
+		}
+		for(std::list<Checker*>::iterator it = checkerListAI->begin(); it != checkerListAI->end(); it++){
+			this->addChild((*it)->GetSprite(), 1000);
+		}
 		
 		controlLayer->AddCheckerList(checkerListUser);
 		ai = new AIControl(checkerListUser, checkerListAI);
@@ -106,7 +112,7 @@ void CheckerScene::CreateScene(CCObject* sender)
 
 void CheckerScene::tick(float dt){
 	bool anyMovement = false;
-	for(std::list<Checker*>::iterator it = checkerListUser.begin(); it != checkerListUser.end(); it++){
+	for(std::list<Checker*>::iterator it = checkerListUser->begin(); it != checkerListUser->end(); it++){
 		(it._Ptr)->_Myval->tick(dt);
 
 		if (!anyMovement){
@@ -120,7 +126,7 @@ void CheckerScene::tick(float dt){
 			}
 		}
 	}
-	for(std::list<Checker*>::iterator it = checkerListAI.begin(); it != checkerListAI.end(); it++){
+	for(std::list<Checker*>::iterator it = checkerListAI->begin(); it != checkerListAI->end(); it++){
 		(it._Ptr)->_Myval->tick(dt);
 
 		if (!anyMovement){
@@ -137,9 +143,9 @@ void CheckerScene::tick(float dt){
 	
 	if (!anyMovement){
 		// remove checkers out of board
-		for(std::list<Checker*>::iterator it = checkerListUser.begin(); it != checkerListUser.end(); it++){
+		for(std::list<Checker*>::iterator it = checkerListUser->begin(); it != checkerListUser->end(); it++){
 		}
-		for(std::list<Checker*>::iterator it = checkerListAI.begin(); it != checkerListAI.end(); it++){
+		for(std::list<Checker*>::iterator it = checkerListAI->begin(); it != checkerListAI->end(); it++){
 		}
 
 		if (ScoreValues::turn == Player::none){

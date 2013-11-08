@@ -21,7 +21,7 @@ private:
 protected:
 
 public:
-	Checker(b2World *world, cocos2d::CCLayer* scene, cocos2d::CCPoint point, CheckerColor color, float mass, float radius, float friction, float restitution);
+	Checker(b2World *world, cocos2d::CCPoint point, CheckerColor color, float mass, float radius, float friction, float restitution);
 	~Checker(void);
 
 	void tick(float dt);	
@@ -31,7 +31,7 @@ public:
 	float GetLinearVelocity() const;
 	float GetAngularVelocity() const;
 
-	void ApplyForce(int force, float angle);
+	void ApplyForce(int force, float angle) const;
 
 	cocos2d::CCSprite *GetSprite() const;
 };

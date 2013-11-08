@@ -36,6 +36,6 @@ void BoardLayer::gameLogic(float dt){
 	this->box2world->Step(dt, velocityIterations, positionIterations);
 }
 
-b2World *BoardLayer::getBox2World(){
+b2World *BoardLayer::getBox2World() const{
 	return this->box2world;
 }

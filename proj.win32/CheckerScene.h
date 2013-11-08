@@ -14,8 +14,6 @@
 #include "AIControl.h"
 #include "FormationManager.h"
 
-class BoardLayer;
-
 class CheckerScene :
 	public cocos2d::CCLayer
 {

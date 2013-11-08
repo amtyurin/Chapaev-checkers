@@ -3,9 +3,6 @@
 #include "Box2D/Box2D.h"
 
 #include "Filenames.h"
-#include "Checker.h"
-
-#include "CheckerScene.h"
 
 #include "B2DebugDraw\B2DebugDrawLayer.h"
 
@@ -22,7 +19,7 @@ public:
 
 	CREATE_FUNC(BoardLayer);
 
-	b2World *getBox2World();
+	b2World *getBox2World() const;
 };
 
 

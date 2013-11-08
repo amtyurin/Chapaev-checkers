@@ -13,5 +13,6 @@ public:
 	
 	static Player firstTurn;
 	static CheckerColor userColor;
+
 };
 

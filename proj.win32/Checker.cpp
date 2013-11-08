@@ -5,7 +5,7 @@ using namespace cocos2d;
 
 using cocos2d::CCDirector;
 
-Checker::Checker(b2World *world, cocos2d::CCLayer* scene, cocos2d::CCPoint point, CheckerColor color, float mass, float radius, float friction, float restitution){
+Checker::Checker(b2World *world, cocos2d::CCPoint point, CheckerColor color, float mass, float radius, float friction, float restitution){
 	this->mass = mass;
 	this->radius = radius;
 	this->friction = friction;
@@ -17,7 +17,7 @@ Checker::Checker(b2World *world, cocos2d::CCLayer* scene, cocos2d::CCPoint point
 	jetBodyDef.position.Set(point.x / PTM_RATIO, point.y / PTM_RATIO);
 	jetBody = world->CreateBody(&jetBodyDef);
 	jetBody->SetLinearDamping(friction);
-	jetBody->SetAngularDamping(friction);
+	jetBody->SetAngularDamping(friction * 2.0f);
 
 	b2CircleShape circleShape;
 	circleShape.m_radius = radius;
@@ -36,7 +36,6 @@ Checker::Checker(b2World *world, cocos2d::CCLayer* scene, cocos2d::CCPoint point
 	sprite->setScale(2 * radius / sprite->getContentSize().width * PTM_RATIO);
 	sprite->setUserData(this);
 
-	scene->addChild(sprite, 1000);
 	jetBody->SetUserData(sprite);
 }
 
@@ -61,7 +60,7 @@ cocos2d::CCSprite *Checker::GetSprite() const
 	return NULL;
 }
 
-void Checker::ApplyForce(int force, float angle){
+void Checker::ApplyForce(int force, float angle) const {
 	const float newForceX = force * cos(angle);
 	const float newForceY = force * sin(angle);
 	
