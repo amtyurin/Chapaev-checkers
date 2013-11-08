@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="source">
+      <UniqueIdentifier>{28d967e4-9e89-437d-ac71-98a89d6897b8}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm</Extensions>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{6f63cdd0-80ac-4c1b-8925-387dffe3df84}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc</Extensions>
+    </Filter>
+    <Filter Include="resource">
+      <UniqueIdentifier>{969e80e3-7467-4c36-90b2-69be1521b580}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;jpg;jpeg;jpe;png;manifest</Extensions>
+    </Filter>
+    <Filter Include="Scores">
+      <UniqueIdentifier>{bc0386b2-b222-451d-9a37-1a67df11eec9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Control">
+      <UniqueIdentifier>{8d27c16c-364a-44c8-94b0-819b17ed8afe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Checkers">
+      <UniqueIdentifier>{fd6e5eef-9746-49d0-9140-2cc8913f893e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Board">
+      <UniqueIdentifier>{a20a5312-87e4-4e26-8943-ef00c7034a53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Formations">
+      <UniqueIdentifier>{01a68ba1-efd9-486f-9495-f3871ba76e0f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Resources\CloseSelected.png">
+      <Filter>resource</Filter>
+    </None>
+    <None Include="..\Resources\CloseNormal.png">
+      <Filter>resource</Filter>
+    </None>
+    <None Include="..\Resources\HelloWorld.png">
+      <Filter>resource</Filter>
+    </None>
+    <None Include="res\Chapaev checkers.ico">
+      <Filter>resource</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\AppDelegate.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\MainMenuScene.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlLayer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="B2DebugDraw\B2DebugDrawLayer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="B2DebugDraw\GLES-Render.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoresLayer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckerScene.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="Checker.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="BoardLayer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSettings.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="Filenames.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="FormationTypes.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreValues.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="AIControl.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="FormationManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\AppDelegate.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\MainMenuScene.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="B2DebugDraw\B2DebugDrawLayer.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="B2DebugDraw\GLES-Render.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckerScene.cpp">
+      <Filter>Checkers</Filter>
+    </ClCompile>
+    <ClCompile Include="Checker.cpp">
+      <Filter>Checkers</Filter>
+    </ClCompile>
+    <ClCompile Include="ScoresLayer.cpp">
+      <Filter>Scores</Filter>
+    </ClCompile>
+    <ClCompile Include="ControlLayer.cpp">
+      <Filter>Control</Filter>
+    </ClCompile>
+    <ClCompile Include="GameSettings.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="BoardLayer.cpp">
+      <Filter>Board</Filter>
+    </ClCompile>
+    <ClCompile Include="ScoreValues.cpp">
+      <Filter>Scores</Filter>
+    </ClCompile>
+    <ClCompile Include="AIControl.cpp">
+      <Filter>Control</Filter>
+    </ClCompile>
+    <ClCompile Include="FormationManager.cpp">
+      <Filter>Formations</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Chapaev checkers.rc">
+      <Filter>resource</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
