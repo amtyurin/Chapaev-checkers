@@ -4,7 +4,7 @@
 #include "Box2D\Box2D.h"
 #include "FormationTypes.h"
 
-class Checker
+class Checker : public cocos2d::CCObject
 {
 private:	
 	b2Fixture *jetFixture;
@@ -14,6 +14,10 @@ private:
 	float radius;
 	float friction;
 	float restitution;
+
+	bool isMovingOutOfBoard;
+
+	void MoveDone();
 	
 	Checker(void);
 	Checker(const Checker&);
@@ -34,6 +38,8 @@ public:
 	void ApplyForce(int force, float angle) const;
 
 	cocos2d::CCSprite *GetSprite() const;
+
+	void RemoveFromBoard();
 };
 
 #endif /*__CHECKER_H__*/

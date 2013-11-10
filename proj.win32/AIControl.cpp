@@ -13,6 +13,26 @@ AIControl::~AIControl(void)
 }
 
 void AIControl::MakeTurn(){
-	// TODO
-	checkerListAI->front()->ApplyForce(rand() % 100, rand() % 10);
+	//find min distance
+	int minDistance = 1000000;
+	Checker *checkerToKick = NULL; 
+	Checker *checkerToWhere = NULL; 
+	for(std::list<Checker*>::iterator itUser = checkerListUser->begin(); itUser != checkerListUser->end(); itUser++){
+		for(std::list<Checker*>::iterator itAI = checkerListAI->begin(); itAI != checkerListAI->end(); itAI++){
+			int distance = cocos2d::ccpDistance(ccp((*itUser)->GetPositionX(),(*itUser)->GetPositionY()),
+				ccp((*itAI)->GetPositionX(),(*itAI)->GetPositionY()));
+			if (distance < minDistance){
+				checkerToKick = *itAI;
+				checkerToWhere = *itUser;
+			}
+		}
+	}
+
+	if(checkerToKick){
+		float angle = 0; // TODO
+		checkerToKick->ApplyForce(rand() % 200 + 50, angle);
+	}
+	else{
+		checkerListAI->front()->ApplyForce(rand() % 200, (rand() % 60) / 10);
+	}
 }

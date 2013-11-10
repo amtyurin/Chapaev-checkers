@@ -74,7 +74,8 @@ bool CheckerScene::init()
 		this->addChild(controlLayer, 4);		
 		
 		// initialize checkers on the board
-		formationManager = new FormationManager(boardLayer->getBox2World());		
+		checkerListOutOfBoard = new std::list<Checker *>();
+		formationManager = new FormationManager(boardLayer);		
 		checkerListUser = formationManager->LoadFormation(Player::user, (FormationTypes)1);
 		checkerListAI = formationManager->LoadFormation(Player::ai, (FormationTypes)1);
 		for(std::list<Checker*>::iterator it = checkerListUser->begin(); it != checkerListUser->end(); it++){
@@ -84,9 +85,11 @@ bool CheckerScene::init()
 			this->addChild((*it)->GetSprite(), 1000);
 		}
 		
+		// add checkers to user and ai controls
 		controlLayer->AddCheckerList(checkerListUser);
 		ai = new AIControl(checkerListUser, checkerListAI);
 
+		// define first turn
 		ScoreValues::turn = GameSettings::firstTurn;
 
 		this->schedule( schedule_selector(CheckerScene::tick), SCHEDULER_TIMER);
@@ -109,45 +112,48 @@ void CheckerScene::CreateScene(CCObject* sender)
 	CCDirector::sharedDirector()->replaceScene(anScene);
 }
 
-
-void CheckerScene::tick(float dt){
+bool CheckerScene::ProcessCheckerList(float dt, std::list<Checker*> *checkerList){
 	bool anyMovement = false;
-	for(std::list<Checker*>::iterator it = checkerListUser->begin(); it != checkerListUser->end(); it++){
-		(it._Ptr)->_Myval->tick(dt);
+	for(std::list<Checker*>::iterator it = checkerList->begin(); it != checkerList->end(); ){
+		(*it)->tick(dt);
 
 		if (!anyMovement){
-			Checker *checker = (it._Ptr)->_Myval;
 			// check for ai turn
-			if (checker->GetLinearVelocity() == 0.0f && checker->GetAngularVelocity() == 0){
-				
-			}
-			else {
+			if ((*it)->GetLinearVelocity() != 0.0f || (*it)->GetAngularVelocity() != 0.0f){
 				anyMovement = true;
 			}
 		}
-	}
-	for(std::list<Checker*>::iterator it = checkerListAI->begin(); it != checkerListAI->end(); it++){
-		(it._Ptr)->_Myval->tick(dt);
 
-		if (!anyMovement){
-			Checker *checker = (it._Ptr)->_Myval;
-			// check for ai turn
-			if (checker->GetLinearVelocity() == 0.0f && checker->GetAngularVelocity() == 0){
-				
-			}
-			else {
-				anyMovement = true;
-			}
+	    //  remove checkers out of board
+		if (boardLayer->IsOutOfBorder(ccp((*it)->GetPositionX(), (*it)->GetPositionY()))){
+			checkerListOutOfBoard->push_front(*it);
+			(*it)->RemoveFromBoard();			
+			checkerList->erase(it++);				
+		}
+		else{
+			it++;
+		}
+	}
+
+	return anyMovement;
+}
+
+void CheckerScene::tick(float dt){
+	bool anyMovement = ProcessCheckerList(dt, checkerListUser) | 
+					   ProcessCheckerList(dt, checkerListAI);
+
+	//wait until out of board checkers are moving 
+	for(std::list<Checker*>::iterator it = checkerListOutOfBoard->begin(); it != checkerListOutOfBoard->end(); ){
+		if ((*it)->GetLinearVelocity() != 0.0f){			
+			anyMovement = true;
+			it++;
+		}
+		else{
+			checkerListOutOfBoard->erase(it++);
 		}
 	}
 	
 	if (!anyMovement){
-		// remove checkers out of board
-		for(std::list<Checker*>::iterator it = checkerListUser->begin(); it != checkerListUser->end(); it++){
-		}
-		for(std::list<Checker*>::iterator it = checkerListAI->begin(); it != checkerListAI->end(); it++){
-		}
-
 		if (ScoreValues::turn == Player::none){
 			if (GameSettings::firstTurn == Player::ai || ScoreValues::shots % 2 == 1){
 				ScoreValues::turn = Player::ai;
@@ -160,6 +166,31 @@ void CheckerScene::tick(float dt){
 			ScoreValues::turn = Player::none;			
 			ai->MakeTurn();		
 			ScoreValues::shots++;
+		}
+	}
+	else {
+		Player whoWon = Player::none;
+		bool wonFlag = false;
+
+		if(checkerListUser->empty() && checkerListAI->empty()){
+			wonFlag = true;
+		}
+		else if (checkerListUser->empty()){
+			wonFlag = true;
+			whoWon = Player::ai;
+		}
+		else if (checkerListAI->empty()){
+			wonFlag = true;
+			whoWon = Player::user;
+		}
+		
+		if (wonFlag){
+			this->unschedule( schedule_selector(CheckerScene::tick));
+
+			//animation
+
+			// go to the next level
+			CreateScene(this);
 		}
 	}
 }

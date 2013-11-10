@@ -7,12 +7,13 @@ public:
 	~GameSettings(void);
 
 	static float checkersMass;
-	static float checkersRadius;
 	static float checkersFriction;
 	static float checkersRestitution;
-	
-	static Player firstTurn;
-	static CheckerColor userColor;
+	static int maxForce;
 
+	static Player firstTurn;
+	static CheckerColor userColor;	
+
+	static const int BOARD_SIZE = 8;
 };
 

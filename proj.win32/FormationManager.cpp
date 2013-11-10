@@ -1,9 +1,33 @@
 #include "FormationManager.h"
 #include "GameSettings.h"
 
-FormationManager::FormationManager(b2World *world)
+FormationManager::FormationManager(BoardLayer *boardLayer)
 {
-	this->world = world;
+	this->boardLayer = boardLayer;
+
+	static const int infantryFormation[GameSettings::BOARD_SIZE][2] = {{1,1},{2,1},{3,1},{4,1},{5,1},{6,1},{7,1},{8,1}};
+	static const int menInBlueFormation[GameSettings::BOARD_SIZE][2] = {{1,1},{2,1},{3,1},{4,1},{5,1},{6,1},{7,1},{8,1}};
+	static const int marinesFormation[GameSettings::BOARD_SIZE][2] = {{1,1},{2,1},{3,1},{4,1},{5,1},{6,1},{7,1},{8,1}};
+	static const int tanksFormation[GameSettings::BOARD_SIZE][2] = {{1,1},{2,1},{3,1},{4,1},{5,1},{6,1},{7,1},{8,1}};
+	static const int heavyTanksFormation[GameSettings::BOARD_SIZE][2] = {{1,1},{2,1},{3,1},{4,1},{5,1},{6,1},{7,1},{8,1}};
+	static const int artilleryFormation[GameSettings::BOARD_SIZE][2] = {{1,1},{2,1},{3,1},{4,1},{5,1},{6,1},{7,1},{8,1}};
+	static const int cavalryFormation[GameSettings::BOARD_SIZE][2] = {{1,1},{2,1},{3,1},{4,1},{5,1},{6,1},{7,1},{8,1}};
+	static const int bunkerFormation[GameSettings::BOARD_SIZE][2] = {{1,1},{2,1},{3,1},{4,1},{5,1},{6,1},{7,1},{8,1}};
+	static const int towerFormation[GameSettings::BOARD_SIZE][2] = {{1,1},{2,1},{3,1},{4,1},{5,1},{6,1},{7,1},{8,1}};
+	static const int fortressFormation[GameSettings::BOARD_SIZE][2] = {{1,1},{2,1},{3,1},{4,1},{5,1},{6,1},{7,1},{8,1}};
+	static const int katyushaFormation[GameSettings::BOARD_SIZE][2] = {{1,1},{2,1},{3,1},{4,1},{5,1},{6,1},{7,1},{8,1}};
+
+	formationMap.insert ( std::pair<FormationTypes, const int (*)[2]> (FormationTypes::infantry, infantryFormation) );
+	formationMap.insert ( std::pair<FormationTypes, const int (*)[2]> (FormationTypes::menInBlue, menInBlueFormation) );
+	formationMap.insert ( std::pair<FormationTypes, const int (*)[2]> (FormationTypes::marines, marinesFormation) );
+	formationMap.insert ( std::pair<FormationTypes, const int (*)[2]> (FormationTypes::tanks, tanksFormation) );
+	formationMap.insert ( std::pair<FormationTypes, const int (*)[2]> (FormationTypes::heavyTanks, heavyTanksFormation) );
+	formationMap.insert ( std::pair<FormationTypes, const int (*)[2]> (FormationTypes::artillery, artilleryFormation) );
+	formationMap.insert ( std::pair<FormationTypes, const int (*)[2]> (FormationTypes::cavalry, cavalryFormation) );
+	formationMap.insert ( std::pair<FormationTypes, const int (*)[2]> (FormationTypes::bunker, bunkerFormation) );
+	formationMap.insert ( std::pair<FormationTypes, const int (*)[2]> (FormationTypes::tower, towerFormation) );
+	formationMap.insert ( std::pair<FormationTypes, const int (*)[2]> (FormationTypes::fortress, fortressFormation) );
+	formationMap.insert ( std::pair<FormationTypes, const int (*)[2]> (FormationTypes::katyusha, katyushaFormation) );
 }
 
 
@@ -12,30 +36,29 @@ FormationManager::~FormationManager(void)
 }
 
 void FormationManager::AddChecker(cocos2d::CCPoint point, std::list<Checker*> *list, CheckerColor color){
-	Checker *checker = new Checker(this->world, point, color, GameSettings::checkersMass, GameSettings::checkersRadius, GameSettings::checkersFriction, GameSettings::checkersRestitution);
+	float newRadius = boardLayer->GetSquareWidth() / 2.0f * 0.8f / PTM_RATIO;
+ 	Checker *checker = new Checker(boardLayer->getBox2World(), point, color, GameSettings::checkersMass, newRadius, GameSettings::checkersFriction, GameSettings::checkersRestitution);
 	list->push_front(checker);
 }
 
 std::list<Checker*> * FormationManager::LoadFormation(Player player, FormationTypes type) {
-	std::list<Checker*> *checkerList = NULL;
-	if (player == Player::user){
-		checkerList = new std::list<Checker*>();
-		AddChecker(cocos2d::CCPoint(100, 50), checkerList, GameSettings::userColor);
-		AddChecker(cocos2d::CCPoint(230, 50), checkerList, GameSettings::userColor);
-		AddChecker(cocos2d::CCPoint(350, 50), checkerList, GameSettings::userColor);
-		AddChecker(cocos2d::CCPoint(470, 50), checkerList, GameSettings::userColor);
-		AddChecker(cocos2d::CCPoint(590, 50), checkerList, GameSettings::userColor);
-		AddChecker(cocos2d::CCPoint(610, 50), checkerList, GameSettings::userColor);		
+	std::list<Checker*> *checkerList = new std::list<Checker*>();
+	CheckerColor color = GameSettings::userColor;
+
+	if (player == Player::ai){
+		color = GameSettings::userColor == CheckerColor::black ? CheckerColor::white : CheckerColor::black;	
 	}
-	else if (player == Player::ai){
-		checkerList = new std::list<Checker*>();
-		AddChecker(cocos2d::CCPoint(100, 250),checkerList, GameSettings::userColor == CheckerColor::black ? CheckerColor::white : CheckerColor::black);
-		AddChecker(cocos2d::CCPoint(230, 250),checkerList, GameSettings::userColor == CheckerColor::black ? CheckerColor::white : CheckerColor::black);
-		AddChecker(cocos2d::CCPoint(350, 250),checkerList, GameSettings::userColor == CheckerColor::black ? CheckerColor::white : CheckerColor::black);
-		AddChecker(cocos2d::CCPoint(470, 250),checkerList, GameSettings::userColor == CheckerColor::black ? CheckerColor::white : CheckerColor::black);
-		AddChecker(cocos2d::CCPoint(590, 250),checkerList, GameSettings::userColor == CheckerColor::black ? CheckerColor::white : CheckerColor::black);
-		AddChecker(cocos2d::CCPoint(610, 250),checkerList, GameSettings::userColor == CheckerColor::black ? CheckerColor::white : CheckerColor::black);
-	}
+
+	for(int i = 0; i < GameSettings::BOARD_SIZE; i++){
+		const int posX = formationMap[type][i][0];
+		int posY = formationMap[type][i][1];
+
+		if (player == Player::ai){
+			posY = GameSettings::BOARD_SIZE + 1 - posY;
+		}
+
+		AddChecker(cocos2d::CCPoint(boardLayer->GetCoordXForPosX(posX), boardLayer->GetCoordYForPosY(posY)), checkerList, color);
+	}	
 
 	return checkerList;
 }

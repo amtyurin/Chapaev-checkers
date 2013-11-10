@@ -13,6 +13,7 @@
 #include "ControlLayer.h"
 #include "AIControl.h"
 #include "FormationManager.h"
+#include "ScoreValues.h"
 
 class CheckerScene :
 	public cocos2d::CCLayer
@@ -26,6 +27,7 @@ private:
 
 	std::list<Checker*> *checkerListUser;
 	std::list<Checker*> *checkerListAI;
+	std::list<Checker*> *checkerListOutOfBoard;
 
 	AIControl *ai;
 
@@ -35,6 +37,8 @@ private:
 
 	void AddCheckerUser(cocos2d::CCPoint point);
 	void AddCheckerAI(cocos2d::CCPoint point);
+
+	bool ProcessCheckerList(float dt, std::list<Checker*> *checkerList);
 public:
 	CheckerScene(void){};
 	~CheckerScene(void){};
@@ -54,6 +58,9 @@ public:
 	void CreateScene(CCObject *sender);
 
 	void tick(float dt);
+
+	static ScoreValues userScores;
+	static ScoreValues aiScores;
 };
 
 #endif // __CHECKER_SCENE_H__

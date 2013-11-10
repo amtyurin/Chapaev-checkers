@@ -1,5 +1,6 @@
 #include "Checker.h"
 #include "Filenames.h"
+#include "GameSettings.h"
 
 using namespace cocos2d;
 
@@ -11,13 +12,15 @@ Checker::Checker(b2World *world, cocos2d::CCPoint point, CheckerColor color, flo
 	this->friction = friction;
 	this->restitution = restitution;
 
+	isMovingOutOfBoard = false;
+
 	// Create paddle body
 	b2BodyDef jetBodyDef;
 	jetBodyDef.type = b2_dynamicBody;
 	jetBodyDef.position.Set(point.x / PTM_RATIO, point.y / PTM_RATIO);
 	jetBody = world->CreateBody(&jetBodyDef);
 	jetBody->SetLinearDamping(friction);
-	jetBody->SetAngularDamping(friction * 2.0f);
+	jetBody->SetAngularDamping(friction);
 
 	b2CircleShape circleShape;
 	circleShape.m_radius = radius;
@@ -45,7 +48,7 @@ Checker::~Checker(void)
 
 void Checker::tick(float dt){
 	// This is sprite modifications based on the Box2d object 
-	if (jetBody->GetUserData() != NULL) {
+	if (jetBody && jetBody->GetUserData() != NULL) {
 		CCSprite* myActor = (CCSprite*)jetBody->GetUserData();
 		myActor->setPosition( ccp( jetBody->GetPosition().x * PTM_RATIO, jetBody->GetPosition().y * PTM_RATIO) );
 		myActor->setRotation( -1 * CC_RADIANS_TO_DEGREES(jetBody->GetAngle()) );			
@@ -54,30 +57,67 @@ void Checker::tick(float dt){
 
 cocos2d::CCSprite *Checker::GetSprite() const
 {
-	if (jetBody->GetUserData() != NULL) {
+	if (jetBody && jetBody->GetUserData() != NULL) {
 		return (CCSprite*)jetBody->GetUserData();
 	}
 	return NULL;
 }
 
 void Checker::ApplyForce(int force, float angle) const {
-	const float newForceX = force * cos(angle);
-	const float newForceY = force * sin(angle);
+	if (jetBody){
+		force = min(GameSettings::maxForce, force);
+
+		const float newForceX = force * cos(angle);
+		const float newForceY = force * sin(angle);
 	
-	this->jetBody->ApplyLinearImpulse(b2Vec2(newForceX, newForceY), this->jetBody->GetLocalCenter());
+		jetBody->ApplyLinearImpulse(b2Vec2(newForceX, newForceY), this->jetBody->GetLocalCenter());
+		jetBody->SetAngularVelocity(0);
+	}
 }
 
 float Checker::GetPositionX(void) const{
-	return this->jetBody->GetPosition().x;
+	if (!jetBody)
+		return 0;
+	return this->jetBody->GetPosition().x * PTM_RATIO;
 }
 
 float Checker::GetPositionY(void) const{
-	return this->jetBody->GetPosition().y;
+	if (!jetBody)
+		return 0;
+	return this->jetBody->GetPosition().y * PTM_RATIO;
 }
 float Checker::GetLinearVelocity() const{
+	if (isMovingOutOfBoard)
+		return 1;
+	if (!jetBody)
+		return 0;
 	return this->jetBody->GetLinearVelocity().Length();
 }
 
 float Checker::GetAngularVelocity() const{
+	if (!jetBody)
+		return 0;
 	return this->jetBody->GetAngularVelocity();
+}
+
+void Checker::RemoveFromBoard(){
+	if (jetBody){
+		const int scaleFactor = 5;
+
+		CCSprite * sprite = GetSprite();
+		if (sprite){
+			CCFiniteTimeAction* actionScale= CCScaleTo::create(0.8f, sprite->getScale() / scaleFactor);
+			CCFiniteTimeAction* actionMoveDone = CCCallFunc::create(this, callfunc_selector(Checker::MoveDone));
+			sprite->runAction( CCSequence::create(actionScale, actionMoveDone, NULL) );
+
+			isMovingOutOfBoard = true;
+		}
+		
+		jetBody->GetWorld()->DestroyBody(jetBody);
+		jetBody = NULL;
+	}
+}
+
+void Checker::MoveDone(){
+	isMovingOutOfBoard = false;
 }

@@ -1,7 +1,6 @@
 #include "ScoreValues.h"
 
 Player ScoreValues::turn = Player::none;
-int ScoreValues::shots = 0;
 
 ScoreValues::ScoreValues(void)
 {

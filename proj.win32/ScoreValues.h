@@ -2,15 +2,15 @@
 #include "FormationTypes.h"
 class ScoreValues
 {
-	FormationTypes currentformation;	
+	int wins;		
 	int scores;
-	int wins;	
+	int shots;
+	FormationTypes currentformation;
 
 public:
 	ScoreValues(void);
 	~ScoreValues(void);
 
 	static Player turn;
-	static int shots;
 };
 

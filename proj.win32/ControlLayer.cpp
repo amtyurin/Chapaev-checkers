@@ -43,8 +43,8 @@ void ControlLayer::ccTouchesBegan(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pE
 		CCPoint location = touch->getLocation();
 
 		for(std::list<Checker*>::iterator it = checkerList->begin(); it != checkerList->end(); it++){
-			if ((it._Ptr)->_Myval->GetSprite()->boundingBox().containsPoint(location)){	
-				movingSprite = (it._Ptr)->_Myval->GetSprite();
+			if ((*it)->GetSprite()->boundingBox().containsPoint(location)){	
+				movingSprite = (*it)->GetSprite();
 			}
 		}
 	}
@@ -73,7 +73,7 @@ void ControlLayer::ccTouchesEnded(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pE
 	
 	if (movingSprite != NULL){
 		float angle = cocos2d::ccpToAngle(ccp(movingSprite->getPositionX() - touchLocation.x, movingSprite->getPositionY() - touchLocation.y));
-		float force = min(MAX_FORCE, cocos2d::ccpDistance(movingSprite->getPosition(), touchLocation));
+		float force = cocos2d::ccpDistance(movingSprite->getPosition(), touchLocation);
 		((Checker *)(movingSprite->getUserData()))->ApplyForce(force, angle);
 
 		ScoreValues::turn = Player::none;
