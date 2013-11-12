@@ -102,13 +102,18 @@ float Checker::GetAngularVelocity() const{
 
 void Checker::RemoveFromBoard(){
 	if (jetBody){
-		const int scaleFactor = 5;
+		const float scaleFactor = 3.0f;
 
 		CCSprite * sprite = GetSprite();
 		if (sprite){
-			CCFiniteTimeAction* actionScale= CCScaleTo::create(0.8f, sprite->getScale() / scaleFactor);
+			// let's define direction
+			float newX = jetBody->GetPosition().x + jetBody->GetLinearVelocity().x / jetBody->GetLinearVelocity().Length();
+			float newY = jetBody->GetPosition().y + jetBody->GetLinearVelocity().y / jetBody->GetLinearVelocity().Length();
+
+			CCFiniteTimeAction* actionMoveFurther = cocos2d::CCMoveTo::create(0.3f, ccp(newX * PTM_RATIO, newY * PTM_RATIO));
+			CCFiniteTimeAction* actionScale = CCScaleTo::create(0.5f, sprite->getScale() / scaleFactor);
 			CCFiniteTimeAction* actionMoveDone = CCCallFunc::create(this, callfunc_selector(Checker::MoveDone));
-			sprite->runAction( CCSequence::create(actionScale, actionMoveDone, NULL) );
+			sprite->runAction( CCSequence::create(actionMoveFurther, actionScale, actionMoveDone, NULL) );
 
 			isMovingOutOfBoard = true;
 		}

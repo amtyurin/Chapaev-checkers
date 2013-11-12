@@ -77,7 +77,7 @@ void ControlLayer::ccTouchesEnded(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pE
 		((Checker *)(movingSprite->getUserData()))->ApplyForce(force, angle);
 
 		ScoreValues::turn = Player::none;
-		ScoreValues::shots++;
+		ScoreValues::shotsUser++;
 	}
 
 	movingSprite = NULL;	

@@ -11,7 +11,6 @@ public:
 	static float checkersRestitution;
 	static int maxForce;
 
-	static Player firstTurn;
 	static CheckerColor userColor;	
 
 	static const int BOARD_SIZE = 8;

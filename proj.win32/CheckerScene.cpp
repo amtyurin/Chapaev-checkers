@@ -76,8 +76,8 @@ bool CheckerScene::init()
 		// initialize checkers on the board
 		checkerListOutOfBoard = new std::list<Checker *>();
 		formationManager = new FormationManager(boardLayer);		
-		checkerListUser = formationManager->LoadFormation(Player::user, (FormationTypes)1);
-		checkerListAI = formationManager->LoadFormation(Player::ai, (FormationTypes)1);
+		checkerListUser = formationManager->LoadFormation(Player::user, ScoreValues::currentformationUser, ScoreValues::winsUser);
+		checkerListAI = formationManager->LoadFormation(Player::ai, ScoreValues::currentformationAI, ScoreValues::winsAI);
 		for(std::list<Checker*>::iterator it = checkerListUser->begin(); it != checkerListUser->end(); it++){
 			this->addChild((*it)->GetSprite(), 1000);
 		}
@@ -88,9 +88,6 @@ bool CheckerScene::init()
 		// add checkers to user and ai controls
 		controlLayer->AddCheckerList(checkerListUser);
 		ai = new AIControl(checkerListUser, checkerListAI);
-
-		// define first turn
-		ScoreValues::turn = GameSettings::firstTurn;
 
 		this->schedule( schedule_selector(CheckerScene::tick), SCHEDULER_TIMER);
 
@@ -118,7 +115,6 @@ bool CheckerScene::ProcessCheckerList(float dt, std::list<Checker*> *checkerList
 		(*it)->tick(dt);
 
 		if (!anyMovement){
-			// check for ai turn
 			if ((*it)->GetLinearVelocity() != 0.0f || (*it)->GetAngularVelocity() != 0.0f){
 				anyMovement = true;
 			}
@@ -138,11 +134,57 @@ bool CheckerScene::ProcessCheckerList(float dt, std::list<Checker*> *checkerList
 	return anyMovement;
 }
 
+void CheckerScene::CheckWinCondition(){
+	// 0 - nobody
+	// 1 - user
+	// 2 - ai
+	// 3 - user && ai
+	int whoWonFlag = 0;
+
+	if(checkerListUser->empty() && checkerListAI->empty()){
+		whoWonFlag = 3;
+		//animation
+	}
+	else if (checkerListUser->empty()){
+		whoWonFlag = 2;
+		//animation
+	}
+	else if (checkerListAI->empty()){
+		whoWonFlag = 1;
+		//animation
+	}
+
+	if (whoWonFlag){
+		this->unschedule( schedule_selector(CheckerScene::tick));
+	}
+
+	switch(whoWonFlag){
+		case 3: // user && ai
+		case 1: // user
+			ScoreValues::winsUser++;
+			ScoreValues::currentformationUser = formationManager->GetNextFormation(ScoreValues::currentformationUser, ScoreValues::winsUser);
+			if (whoWonFlag == 1){
+				break;
+			}
+		case 2: // ai
+			ScoreValues::winsAI++;
+			ScoreValues::currentformationAI = formationManager->GetNextFormation(ScoreValues::currentformationAI, ScoreValues::winsAI);
+			break;
+		default: // nobody
+			break;
+	}
+		
+	if (whoWonFlag){			
+		// go to the next level
+		CreateScene(this);
+	}
+}
+
 void CheckerScene::tick(float dt){
 	bool anyMovement = ProcessCheckerList(dt, checkerListUser) | 
 					   ProcessCheckerList(dt, checkerListAI);
 
-	//wait until out of board checkers are moving 
+	//check if out of board checkers are moving 
 	for(std::list<Checker*>::iterator it = checkerListOutOfBoard->begin(); it != checkerListOutOfBoard->end(); ){
 		if ((*it)->GetLinearVelocity() != 0.0f){			
 			anyMovement = true;
@@ -154,8 +196,10 @@ void CheckerScene::tick(float dt){
 	}
 	
 	if (!anyMovement){
+		CheckWinCondition();
+
 		if (ScoreValues::turn == Player::none){
-			if (GameSettings::firstTurn == Player::ai || ScoreValues::shots % 2 == 1){
+			if ((ScoreValues::shotsUser + ScoreValues::shotsAI) % 2 == 1){
 				ScoreValues::turn = Player::ai;
 			}
 			else {
@@ -163,34 +207,9 @@ void CheckerScene::tick(float dt){
 			}
 		}
 		else if (ScoreValues::turn == Player::ai){
-			ScoreValues::turn = Player::none;			
-			ai->MakeTurn();		
-			ScoreValues::shots++;
-		}
-	}
-	else {
-		Player whoWon = Player::none;
-		bool wonFlag = false;
-
-		if(checkerListUser->empty() && checkerListAI->empty()){
-			wonFlag = true;
-		}
-		else if (checkerListUser->empty()){
-			wonFlag = true;
-			whoWon = Player::ai;
-		}
-		else if (checkerListAI->empty()){
-			wonFlag = true;
-			whoWon = Player::user;
-		}
-		
-		if (wonFlag){
-			this->unschedule( schedule_selector(CheckerScene::tick));
-
-			//animation
-
-			// go to the next level
-			CreateScene(this);
+			ScoreValues::turn = Player::none;
+			ScoreValues::shotsAI++;
+			ai->MakeTurn();			
 		}
 	}
 }

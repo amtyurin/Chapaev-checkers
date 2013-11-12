@@ -29,7 +29,9 @@ void AIControl::MakeTurn(){
 	}
 
 	if(checkerToKick){
-		float angle = 0; // TODO
+		float angle = 0; 
+		// TODO
+		
 		checkerToKick->ApplyForce(rand() % 200 + 50, angle);
 	}
 	else{
