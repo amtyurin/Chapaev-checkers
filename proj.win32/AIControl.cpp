@@ -1,5 +1,6 @@
 #include "AIControl.h"
 
+using namespace cocos2d;
 
 AIControl::AIControl(std::list<Checker*> *user, std::list<Checker*> *ai)
 {
@@ -24,17 +25,21 @@ void AIControl::MakeTurn(){
 			if (distance < minDistance){
 				checkerToKick = *itAI;
 				checkerToWhere = *itUser;
+				minDistance = distance;
 			}
 		}
 	}
 
 	if(checkerToKick){
 		float angle = 0; 
-		// TODO
-		
-		checkerToKick->ApplyForce(rand() % 200 + 50, angle);
+
+		CCPoint startPoint = checkerToKick->GetSprite()->getPosition();
+		CCPoint stopPoint = checkerToWhere->GetSprite()->getPosition();
+		angle = ccpToAngle(ccp(stopPoint.x - startPoint.x, stopPoint.y - startPoint.y));
+
+		checkerToKick->ApplyForce(rand() % 50 + 50, angle);
 	}
 	else{
-		checkerListAI->front()->ApplyForce(rand() % 200, (rand() % 60) / 10);
+		checkerListAI->front()->ApplyForce(rand() % 50 + 50, (rand() % 60) / 10);
 	}
 }

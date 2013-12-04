@@ -16,7 +16,6 @@ private:
 	float restitution;
 
 	bool isMovingOutOfBoard;
-
 	void MoveDone();
 	
 	Checker(void);
@@ -40,6 +39,8 @@ public:
 	cocos2d::CCSprite *GetSprite() const;
 
 	void RemoveFromBoard();
+
+	void RemoveByScore(int scores, float delay, cocos2d::ccColor3B color);
 };
 
 #endif /*__CHECKER_H__*/

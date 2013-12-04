@@ -52,12 +52,17 @@ void Checker::tick(float dt){
 		CCSprite* myActor = (CCSprite*)jetBody->GetUserData();
 		myActor->setPosition( ccp( jetBody->GetPosition().x * PTM_RATIO, jetBody->GetPosition().y * PTM_RATIO) );
 		myActor->setRotation( -1 * CC_RADIANS_TO_DEGREES(jetBody->GetAngle()) );			
+
+		if (jetBody->GetLinearVelocity().Length() <= 0.2f){
+			jetBody->SetAngularVelocity(0);
+			jetBody->SetLinearVelocity(b2Vec2(0,0));
+		}
 	}	
 }
 
 cocos2d::CCSprite *Checker::GetSprite() const
 {
-	if (jetBody && jetBody->GetUserData() != NULL) {
+	if (jetBody && (jetBody->GetUserData() != NULL)) {
 		return (CCSprite*)jetBody->GetUserData();
 	}
 	return NULL;
@@ -110,7 +115,7 @@ void Checker::RemoveFromBoard(){
 			float newX = jetBody->GetPosition().x + jetBody->GetLinearVelocity().x / jetBody->GetLinearVelocity().Length();
 			float newY = jetBody->GetPosition().y + jetBody->GetLinearVelocity().y / jetBody->GetLinearVelocity().Length();
 
-			CCFiniteTimeAction* actionMoveFurther = cocos2d::CCMoveTo::create(0.3f, ccp(newX * PTM_RATIO, newY * PTM_RATIO));
+			CCFiniteTimeAction* actionMoveFurther = CCMoveTo::create(0.3f, ccp(newX * PTM_RATIO, newY * PTM_RATIO));
 			CCFiniteTimeAction* actionScale = CCScaleTo::create(0.5f, sprite->getScale() / scaleFactor);
 			CCFiniteTimeAction* actionMoveDone = CCCallFunc::create(this, callfunc_selector(Checker::MoveDone));
 			sprite->runAction( CCSequence::create(actionMoveFurther, actionScale, actionMoveDone, NULL) );
@@ -118,6 +123,7 @@ void Checker::RemoveFromBoard(){
 			isMovingOutOfBoard = true;
 		}
 		
+		jetBody->SetUserData(NULL);
 		jetBody->GetWorld()->DestroyBody(jetBody);
 		jetBody = NULL;
 	}
@@ -125,4 +131,35 @@ void Checker::RemoveFromBoard(){
 
 void Checker::MoveDone(){
 	isMovingOutOfBoard = false;
+}
+
+void Checker::RemoveByScore(int scores, float delay, ccColor3B color){
+	if (jetBody){
+		CCSprite * sprite = GetSprite();
+		if (sprite){
+			CCFiniteTimeAction* actionBrightness = CCBlink::create(SCORE_ANIMATION_DELAY, 1);
+			CCDelayTime* delayAction = CCDelayTime::create(delay);
+
+			sprite->runAction( CCSequence::create(delayAction, actionBrightness, NULL) );
+
+			// display scores	
+			char text[20];
+			itoa(scores, text, 10);
+			CCLabelTTF* pLabel = CCLabelTTF::create(text, "Arial", 44);
+			pLabel->setPositionX(sprite->getPositionX());
+            pLabel->setPositionY(sprite->getPositionY());
+            pLabel->setColor(color);
+			pLabel->setScale(0.4);
+			
+			CCFiniteTimeAction* actionFadeIn = cocos2d::CCFadeIn::create(SCORE_ANIMATION_DELAY);
+			CCFiniteTimeAction* actionMove = CCMoveTo::create(SCORE_ANIMATION_DELAY, ccp(sprite->getPositionX(), sprite->getPositionY() + 20));
+			CCFiniteTimeAction* scaleAction = CCScaleTo::create(SCORE_ANIMATION_DELAY * 1, 1);
+			CCFiniteTimeAction* actionFadeOut = cocos2d::CCFadeOut::create(SCORE_ANIMATION_DELAY);
+			pLabel->runAction(CCSequence::create(delayAction, actionFadeIn, scaleAction, actionFadeOut, NULL));
+			pLabel->runAction(CCSequence::create(delayAction, actionFadeIn, actionMove, NULL));
+
+			pLabel->setOpacity(0);
+			sprite->getParent()->addChild(pLabel, 1500);
+		}
+	}
 }

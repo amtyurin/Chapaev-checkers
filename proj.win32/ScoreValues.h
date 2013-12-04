@@ -1,9 +1,9 @@
 #pragma once
 #include "FormationTypes.h"
+#include "Checker.h"
+
 class ScoreValues
 {
-
-
 	ScoreValues(void);
 	~ScoreValues(void);
 public:
@@ -19,5 +19,7 @@ public:
 	static int scoresAI;
 	static int shotsAI;
 	static FormationTypes currentformationAI;
+
+	static void CountScores(std::list<Checker*> *checkerList, Player player);
 };
 

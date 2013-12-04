@@ -19,6 +19,6 @@ public:
 	~FormationManager(void);
 
 	std::list<Checker*> *LoadFormation(Player player, FormationTypes currFormation, int wins);
-	FormationTypes GetNextFormation(FormationTypes currFormation, int wins);
+	FormationTypes GetNextFormation(int wins);
 };
 

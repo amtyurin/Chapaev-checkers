@@ -134,7 +134,7 @@ bool CheckerScene::ProcessCheckerList(float dt, std::list<Checker*> *checkerList
 	return anyMovement;
 }
 
-void CheckerScene::CheckWinCondition(){
+bool CheckerScene::CheckWinCondition(){
 	// 0 - nobody
 	// 1 - user
 	// 2 - ai
@@ -155,20 +155,29 @@ void CheckerScene::CheckWinCondition(){
 	}
 
 	if (whoWonFlag){
-		this->unschedule( schedule_selector(CheckerScene::tick));
+		this->unschedule( schedule_selector(CheckerScene::tick));		
+		scoresLayer->DisplayScores();
 	}
+
+	float delay = 0.0f;
 
 	switch(whoWonFlag){
 		case 3: // user && ai
 		case 1: // user
 			ScoreValues::winsUser++;
-			ScoreValues::currentformationUser = formationManager->GetNextFormation(ScoreValues::currentformationUser, ScoreValues::winsUser);
+			ScoreValues::currentformationUser = formationManager->GetNextFormation(ScoreValues::winsUser);
 			if (whoWonFlag == 1){
+				ScoreValues::CountScores(checkerListUser, Player::user);
+				delay = checkerListUser->size();
+				ScoreValues::turn = Player::user;
 				break;
 			}
 		case 2: // ai
 			ScoreValues::winsAI++;
-			ScoreValues::currentformationAI = formationManager->GetNextFormation(ScoreValues::currentformationAI, ScoreValues::winsAI);
+			ScoreValues::currentformationAI = formationManager->GetNextFormation(ScoreValues::winsAI);
+			ScoreValues::CountScores(checkerListAI, Player::ai);
+			delay = checkerListAI->size();
+			ScoreValues::turn = Player::ai;
 			break;
 		default: // nobody
 			break;
@@ -176,8 +185,16 @@ void CheckerScene::CheckWinCondition(){
 		
 	if (whoWonFlag){			
 		// go to the next level
-		CreateScene(this);
+		delay = delay * SCORE_ANIMATION_DELAY + SCORE_ANIMATION_DELAY * 4;
+		this->schedule( schedule_selector(CheckerScene::NextScene), delay + SCORE_ANIMATION_DELAY);
+		return true;
 	}
+	return false;
+}
+
+void CheckerScene::NextScene(float dt){
+	this->unschedule(schedule_selector(CheckerScene::NextScene));
+	CreateScene(this);
 }
 
 void CheckerScene::tick(float dt){
@@ -196,20 +213,20 @@ void CheckerScene::tick(float dt){
 	}
 	
 	if (!anyMovement){
-		CheckWinCondition();
-
-		if (ScoreValues::turn == Player::none){
-			if ((ScoreValues::shotsUser + ScoreValues::shotsAI) % 2 == 1){
-				ScoreValues::turn = Player::ai;
+		if (!CheckWinCondition()){
+			if (ScoreValues::turn == Player::none){
+				if ((ScoreValues::shotsUser + ScoreValues::shotsAI) % 2 == 1){
+					ScoreValues::turn = Player::ai;
+				}
+				else {
+					ScoreValues::turn = Player::user;
+				}
 			}
-			else {
-				ScoreValues::turn = Player::user;
+			else if (ScoreValues::turn == Player::ai){
+				ScoreValues::turn = Player::none;
+				ScoreValues::shotsAI++;
+				ai->MakeTurn();			
 			}
-		}
-		else if (ScoreValues::turn == Player::ai){
-			ScoreValues::turn = Player::none;
-			ScoreValues::shotsAI++;
-			ai->MakeTurn();			
 		}
 	}
 }

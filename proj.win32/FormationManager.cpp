@@ -6,7 +6,7 @@ FormationManager::FormationManager(BoardLayer *boardLayer)
 	this->boardLayer = boardLayer;
 
 	static const int infantryFormation[GameSettings::BOARD_SIZE][2] =   {{1,1},{2,1},{3,1},{4,1},{5,1},{6,1},{7,1},{8,1}};
-	static const int menInBlueFormation[GameSettings::BOARD_SIZE][2] =  {{1,1},{2,1},{3,1},{4,1},{5,1},{6,1},{7,1},{8,1}};
+	static const int menInBlueFormation[GameSettings::BOARD_SIZE][2] =  {{1,1},{2,2},{3,1},{4,2},{5,1},{6,2},{7,1},{8,2}};
 	static const int marinesFormation[GameSettings::BOARD_SIZE][2] =    {{1,1},{2,1},{3,1},{4,1},{5,1},{6,1},{7,1},{8,1}};
 	static const int tanksFormation[GameSettings::BOARD_SIZE][2] =      {{1,1},{2,1},{3,1},{4,1},{5,1},{6,1},{7,1},{8,1}};
 	static const int heavyTanksFormation[GameSettings::BOARD_SIZE][2] = {{1,1},{2,1},{3,1},{4,1},{5,1},{6,1},{7,1},{8,1}};
@@ -53,19 +53,14 @@ void FormationManager::AddChecker(cocos2d::CCPoint point, std::list<Checker*> *l
 	list->push_front(checker);
 }
 
-FormationTypes FormationManager::GetNextFormation(FormationTypes currFormation, int wins){
-	int summ = wins - formationWinsMap[currFormation];
-
-	while ((summ - formationWinsMap[currFormation]) > 0 && currFormation > 0){
-		summ = summ - formationWinsMap[currFormation];
-		currFormation = (FormationTypes)((int)currFormation - 1);
+FormationTypes FormationManager::GetNextFormation(int wins){
+    int index = 0;
+	while(formationWinsMap[(FormationTypes)index] <= wins){
+		wins -= formationWinsMap[(FormationTypes)index];
+		index++;
 	}
-
-	// if sum == 1 then we need to go to the next formation
-	if (summ == 1){
-		return (FormationTypes)((int)currFormation + 1);
-	}
-	return currFormation;
+	
+	return (FormationTypes)index;
 }
 
 std::list<Checker*> * FormationManager::LoadFormation(Player player, FormationTypes currFormation, int wins) {
@@ -77,10 +72,13 @@ std::list<Checker*> * FormationManager::LoadFormation(Player player, FormationTy
 	}
 
 	//get line
-	int currentLine = 0;
-	{
-		// TODO
+	int currentLine = 0;	
+	int index = 0;
+	while(formationWinsMap[(FormationTypes)index] <= wins){
+		wins -= formationWinsMap[(FormationTypes)index];
+		index++;
 	}
+	currentLine = wins;
 
 	for(int i = 0; i < GameSettings::BOARD_SIZE; i++){
 		const int posX = formationMap[currFormation][i][0];

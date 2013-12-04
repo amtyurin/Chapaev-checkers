@@ -13,5 +13,7 @@ public:
     virtual bool init();  
 
 	CREATE_FUNC(ScoresLayer);
+
+	void DisplayScores();
 };
 

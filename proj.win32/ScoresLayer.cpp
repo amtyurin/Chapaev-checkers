@@ -20,4 +20,8 @@ bool ScoresLayer::init()
     return bRet;
 }
 
+void ScoresLayer::DisplayScores(){
+	// TODO
+}
+
 

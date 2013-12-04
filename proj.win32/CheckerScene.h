@@ -39,7 +39,8 @@ private:
 	void AddCheckerAI(cocos2d::CCPoint point);
 
 	bool ProcessCheckerList(float dt, std::list<Checker*> *checkerList);
-	void CheckWinCondition();
+	bool CheckWinCondition();
+
 public:
 	CheckerScene(void){};
 	~CheckerScene(void){};
@@ -57,8 +58,10 @@ public:
     CREATE_FUNC(CheckerScene);
 	
 	void CreateScene(CCObject *sender);
-
+	
 	void tick(float dt);
+	
+	void NextScene(float dt);
 };
 
 #endif // __CHECKER_SCENE_H__

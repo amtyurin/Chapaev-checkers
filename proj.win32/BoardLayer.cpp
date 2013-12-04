@@ -45,8 +45,8 @@ bool BoardLayer::init()
 }
 
 void BoardLayer::gameLogic(float dt){
-	const int velocityIterations = 10;
-	const int positionIterations = 8;
+	const int velocityIterations = 8;
+	const int positionIterations = 6;
 
 	this->box2world->Step(dt, velocityIterations, positionIterations);
 }
