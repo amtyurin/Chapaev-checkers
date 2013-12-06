@@ -1,4 +1,5 @@
 #include "AIControl.h"
+#include "GameSettings.h"
 
 using namespace cocos2d;
 
@@ -30,11 +31,21 @@ void AIControl::MakeTurn(){
 		}
 	}
 
-	if(checkerToKick){
-		float angle = 0; 
+	CCPoint startPoint;
+	CCPoint stopPoint;
+	switch (GameSettings::difficulty){
+		case Difficulty::Easy:
+			CCPoint startPoint = checkerToKick->GetSprite()->getPosition();
+		    CCPoint stopPoint = checkerToWhere->GetSprite()->getPosition();
+			break;
+		case Difficulty::Medium:
+			break;
+		case Difficulty::Hard:
+			break;
+	}
 
-		CCPoint startPoint = checkerToKick->GetSprite()->getPosition();
-		CCPoint stopPoint = checkerToWhere->GetSprite()->getPosition();
+	if(checkerToKick){
+		float angle = 0; 		
 		angle = ccpToAngle(ccp(stopPoint.x - startPoint.x, stopPoint.y - startPoint.y));
 
 		checkerToKick->ApplyForce(rand() % 50 + 50, angle);

@@ -38,7 +38,8 @@ void ControlLayer::AddCheckerList(std::list<Checker*> *checkerList){
 
 void ControlLayer::ccTouchesBegan(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent)
 {
-	if (ScoreValues::turn == Player::user){
+	if (ScoreValues::turn == Player::user &&
+		!ScoreValues::AnyMovementAroundBoard){
 		CCTouch* touch = (CCTouch*)( pTouches->anyObject() );
 		CCPoint location = touch->getLocation();
 
@@ -76,7 +77,7 @@ void ControlLayer::ccTouchesEnded(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pE
 		float force = cocos2d::ccpDistance(movingSprite->getPosition(), touchLocation);
 		((Checker *)(movingSprite->getUserData()))->ApplyForce(force, angle);
 
-		ScoreValues::turn = Player::none;
+		ScoreValues::turn = Player::ai;
 		ScoreValues::shotsUser++;
 	}
 

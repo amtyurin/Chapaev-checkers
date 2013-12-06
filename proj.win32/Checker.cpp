@@ -137,15 +137,15 @@ void Checker::RemoveByScore(int scores, float delay, ccColor3B color){
 	if (jetBody){
 		CCSprite * sprite = GetSprite();
 		if (sprite){
-			CCFiniteTimeAction* actionBrightness = CCBlink::create(SCORE_ANIMATION_DELAY, 1);
+			CCFiniteTimeAction* actionFadeOutChecker = cocos2d::CCFadeOut::create(SCORE_ANIMATION_DELAY);
 			CCDelayTime* delayAction = CCDelayTime::create(delay);
 
-			sprite->runAction( CCSequence::create(delayAction, actionBrightness, NULL) );
+			sprite->runAction( CCSequence::create(delayAction, actionFadeOutChecker, NULL) );
 
 			// display scores	
 			char text[20];
 			itoa(scores, text, 10);
-			CCLabelTTF* pLabel = CCLabelTTF::create(text, "Arial", 44);
+			CCLabelTTF* pLabel = CCLabelTTF::create(text, "Arial", CCDirector::sharedDirector()->getWinSize().height * 2 / 30 + 4);
 			pLabel->setPositionX(sprite->getPositionX());
             pLabel->setPositionY(sprite->getPositionY());
             pLabel->setColor(color);

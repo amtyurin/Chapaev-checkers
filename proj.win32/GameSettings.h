@@ -6,6 +6,13 @@
 #define SCORE_COLOR_CCC3_USER cocos2d::ccc3(255,127,0)
 #define SCORE_COLOR_CCC3_AI cocos2d::ccc3(255,48,48)
 
+
+enum Difficulty {
+	Easy,
+	Medium,
+	Hard
+};
+
 class GameSettings
 {
 public:
@@ -20,5 +27,7 @@ public:
 	static CheckerColor userColor;	
 
 	static const int BOARD_SIZE = 8;
+
+	static Difficulty difficulty;
 };
 

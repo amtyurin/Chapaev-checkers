@@ -89,6 +89,10 @@ bool CheckerScene::init()
 		controlLayer->AddCheckerList(checkerListUser);
 		ai = new AIControl(checkerListUser, checkerListAI);
 
+		scoresLayer->DisplayScores();
+
+		ScoreValues::AnyMovementAroundBoard = false;
+
 		this->schedule( schedule_selector(CheckerScene::tick), SCHEDULER_TIMER);
 
         bRet = true;
@@ -140,7 +144,6 @@ bool CheckerScene::CheckWinCondition(){
 	// 2 - ai
 	// 3 - user && ai
 	int whoWonFlag = 0;
-
 	if(checkerListUser->empty() && checkerListAI->empty()){
 		whoWonFlag = 3;
 		//animation
@@ -155,12 +158,10 @@ bool CheckerScene::CheckWinCondition(){
 	}
 
 	if (whoWonFlag){
-		this->unschedule( schedule_selector(CheckerScene::tick));		
-		scoresLayer->DisplayScores();
-	}
+		this->unschedule( schedule_selector(CheckerScene::tick));
+	}	
 
 	float delay = 0.0f;
-
 	switch(whoWonFlag){
 		case 3: // user && ai
 		case 1: // user
@@ -187,6 +188,7 @@ bool CheckerScene::CheckWinCondition(){
 		// go to the next level
 		delay = delay * SCORE_ANIMATION_DELAY + SCORE_ANIMATION_DELAY * 4;
 		this->schedule( schedule_selector(CheckerScene::NextScene), delay + SCORE_ANIMATION_DELAY);
+		scoresLayer->DisplayScores();
 		return true;
 	}
 	return false;
@@ -212,19 +214,16 @@ void CheckerScene::tick(float dt){
 		}
 	}
 	
+	ScoreValues::AnyMovementAroundBoard = anyMovement;
 	if (!anyMovement){
 		if (!CheckWinCondition()){
-			if (ScoreValues::turn == Player::none){
-				if ((ScoreValues::shotsUser + ScoreValues::shotsAI) % 2 == 1){
-					ScoreValues::turn = Player::ai;
-				}
-				else {
-					ScoreValues::turn = Player::user;
-				}
-			}
-			else if (ScoreValues::turn == Player::ai){
-				ScoreValues::turn = Player::none;
+			if (ScoreValues::turn == Player::ai){
+				// to prevent user move
+				ScoreValues::AnyMovementAroundBoard = true;
+				
+				ScoreValues::turn = Player::user;
 				ScoreValues::shotsAI++;
+				scoresLayer->DisplayScores();
 				ai->MakeTurn();			
 			}
 		}
